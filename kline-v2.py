@@ -1006,15 +1006,25 @@ while True:
                     # ------ 你的数据加载，信号生成，K栏赋值等逻辑 ------
     
                     # 假定每次新k线，data['K']已经生成且最后一行为最新信号字符串
-                    if len(data["異動標記"]) > 0:
-                        K_signals = str(data["異動標記"].iloc[-1])  # K栏内容可能是单个信号，也可能是逗号分隔字符串
-                        need_alert = any(sig in K_signals for sig in selected_signals)
-                        if need_alert:
-                            alertmsg = f"{data['Datetime'].iloc[-1]} {ticker}: 出现信号=> {K_signals}"
-                            send_telegram_alert(alertmsg)  # Telegram推送
+                    # if len(data["異動標記"]) > 0:
+                    #     K_signals = str(data["異動標記"].iloc[-1])  # K栏内容可能是单个信号，也可能是逗号分隔字符串
+                    #     need_alert = any(sig in K_signals for sig in selected_signals)
+                    #     if need_alert:
+                    #         alertmsg = f"{data['Datetime'].iloc[-1]} {ticker}: 出现信号=> {K_signals}"
+                    #         send_telegram_alert(alertmsg)  # Telegram推送
                             # sendemailalert(...)  # 可保留原有email推送
                     
                     # 其余原始代码不变
+                    if len(data["異動標記"]) > 0:
+                        K_signals = str(data["異動標記"].iloc[-1])  # 最新一根K线的信号字符串
+                        # 将K信号拆分为列表
+                        K_signals_list = [s.strip() for s in K_signals.split(",")]
+                    
+                        # 检查是否所有用户选中的信号都存在于K信号中
+                        if all(signal in K_signals_list for signal in selected_signals):
+                            alertmsg = f"{data['Datetime'].iloc[-1]} {ticker}: 同时出现全部信号 => {', '.join(selected_signals)}"
+                            send_telegram_alert(alertmsg)
+                    ##########
                 # 添加 K 线图（含 EMA）、成交量柱状图和 RSI 子图
                 st.subheader(f"📈 {ticker} K線圖與技術指標")
                 timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
