@@ -274,18 +274,7 @@ selected_signals = st.multiselect(
     default=["📉 MACD賣出", "📉 EMA賣出"]
 )
 
-# ------ 你的数据加载，信号生成，K栏赋值等逻辑 ------
 
-# 假定每次新k线，data['K']已经生成且最后一行为最新信号字符串
-if len(data["異動標記"]) > 0:
-    K_signals = str(data["異動標記"].iloc[-1])  # K栏内容可能是单个信号，也可能是逗号分隔字符串
-    need_alert = any(sig in K_signals for sig in selected_signals)
-    if need_alert:
-        alertmsg = f"{data['Datetime'].iloc[-1]} {ticker}: 出现信号=> {K_signals}"
-        send_telegram_alert(alertmsg)  # Telegram推送
-        # sendemailalert(...)  # 可保留原有email推送
-
-# 其余原始代码不变
 # 新增：K线形态阈值调整（动态阈值优化）
 BODY_RATIO_THRESHOLD = st.number_input("K線實體占比閾值 (大陽/大陰線)", min_value=0.1, max_value=0.9, value=0.6, step=0.05)
 SHADOW_RATIO_THRESHOLD = st.number_input("K線影線長度閾值 (錘子/射擊線)", min_value=0.1, max_value=3.0, value=2.0, step=0.1)
@@ -1009,6 +998,18 @@ while True:
                                     bullish_engulfing, bearish_engulfing, hammer, hanging_man,
                                     morning_star, evening_star)
 
+                    # ------ 你的数据加载，信号生成，K栏赋值等逻辑 ------
+    
+                    # 假定每次新k线，data['K']已经生成且最后一行为最新信号字符串
+                    if len(data["異動標記"]) > 0:
+                        K_signals = str(data["異動標記"].iloc[-1])  # K栏内容可能是单个信号，也可能是逗号分隔字符串
+                        need_alert = any(sig in K_signals for sig in selected_signals)
+                        if need_alert:
+                            alertmsg = f"{data['Datetime'].iloc[-1]} {ticker}: 出现信号=> {K_signals}"
+                            send_telegram_alert(alertmsg)  # Telegram推送
+                            # sendemailalert(...)  # 可保留原有email推送
+                    
+                    # 其余原始代码不变
                 # 添加 K 线图（含 EMA）、成交量柱状图和 RSI 子图
                 st.subheader(f"📈 {ticker} K線圖與技術指標")
                 timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
