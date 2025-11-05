@@ -277,7 +277,7 @@ selected_signals = st.multiselect(
 # ------ 你的数据加载，信号生成，K栏赋值等逻辑 ------
 
 # 假定每次新k线，data['K']已经生成且最后一行为最新信号字符串
-if len(data) > 0:
+if len(data["異動標記"]) > 0:
     K_signals = str(data["異動標記"].iloc[-1])  # K栏内容可能是单个信号，也可能是逗号分隔字符串
     need_alert = any(sig in K_signals for sig in selected_signals)
     if need_alert:
