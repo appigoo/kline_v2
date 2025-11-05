@@ -271,7 +271,7 @@ all_signal_types = [
 selected_signals = st.multiselect(
     "选择哪些信号需要推送Telegram",
     all_signal_types,
-    default=["MACD賣出", "EMA賣出"]
+    default=["📉 MACD賣出", "📉 EMA賣出"]
 )
 
 # ------ 你的数据加载，信号生成，K栏赋值等逻辑 ------
