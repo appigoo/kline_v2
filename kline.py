@@ -11,6 +11,7 @@ import os
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+import requests
 
 st.set_page_config(page_title="股票監控儀表板", layout="wide")
 
@@ -22,6 +23,39 @@ REFRESH_INTERVAL = 144  # 秒，5 分钟自动刷新
 SENDER_EMAIL = os.getenv("SENDER_EMAIL")
 SENDER_PASSWORD = os.getenv("SENDER_PASSWORD")
 RECIPIENT_EMAIL = os.getenv("RECIPIENT_EMAIL")
+
+# ==================== Telegram 設定與函數 (保持不變) ====================
+try:
+    # 假設 secrets.toml 已經設定
+    BOT_TOKEN = st.secrets["telegram"]["BOT_TOKEN"]
+    CHAT_ID = st.secrets["telegram"]["CHAT_ID"]
+    telegram_ready = True
+except Exception:
+    BOT_TOKEN = CHAT_ID = None
+    telegram_ready = False
+    # st.sidebar.error("Telegram 設定錯誤，請檢查 secrets.toml") # 避免過度提醒
+
+def send_telegram_alert(msg: str) -> bool:
+    if not (BOT_TOKEN and CHAT_ID):
+        return False
+    # ... (Telegram 發送邏輯，保持不變)
+    try:
+        url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+        payload = {
+            "chat_id": CHAT_ID,
+            "text": msg,
+            "parse_mode": "HTML",
+            "disable_web_page_preview": True
+        }
+        response = requests.get(url, params=payload, timeout=10)
+        if response.status_code == 200 and response.json().get("ok"):
+            return True
+        else:
+            # st.warning(f"Telegram API 錯誤: {response.json()}")
+            return False
+    except Exception as e:
+        # st.warning(f"Telegram 發送失敗: {e}")
+        return False
 
 # MACD 计算函数
 def calculate_macd(data, fast=12, slow=26, signal=9):
@@ -223,7 +257,35 @@ CONTINUOUS_UP_THRESHOLD = st.number_input("連續上漲閾值 (根K線)", min_va
 CONTINUOUS_DOWN_THRESHOLD = st.number_input("連續下跌閾值 (根K線)", min_value=1, max_value=20, value=3, step=1)
 PERCENTILE_THRESHOLD = st.selectbox("選擇 Price Change %、Volume Change %、Volume、股價漲跌幅 (%)、成交量變動幅 (%) 數據範圍 (%)", percentile_options, index=1)
 REFRESH_INTERVAL = st.selectbox("选择刷新间隔 (秒)", refresh_options, index=refresh_options.index(144))
+#
+all_signal_types = [
+    "📉 High<Low", "📉 MACD賣出", "📉 EMA賣出", "📉 價格趨勢賣出", "📉 價格趨勢賣出(量)", 
+        "📉 價格趨勢賣出(量%)", "📉 普通跳空(下)", "📉 突破跳空(下)", "📉 持續跳空(下)", 
+        "📉 衰竭跳空(下)", "📉 連續向下賣出", "📉 SMA50下降趨勢", "📉 SMA50_200下降趨勢", 
+        "📉 新卖出信号", "📉 RSI-MACD Overbought Crossover", "📉 EMA-SMA Downtrend Sell", 
+        "📉 Volume-MACD Sell", "📉 EMA10_30賣出", "📉 EMA10_30_40強烈賣出", "📉 看跌吞沒", 
+        "📉 上吊線", "📉 黃昏之星"
+    # ...其他K栏位信号. 注意不要遗漏你的所有信号
+]
 
+selected_signals = st.multiselect(
+    "选择哪些信号需要推送Telegram",
+    all_signal_types,
+    default=["MACD賣出", "EMA賣出"]
+)
+
+# ------ 你的数据加载，信号生成，K栏赋值等逻辑 ------
+
+# 假定每次新k线，data['K']已经生成且最后一行为最新信号字符串
+if len(data) > 0:
+    K_signals = str(data["異動標記"].iloc[-1])  # K栏内容可能是单个信号，也可能是逗号分隔字符串
+    need_alert = any(sig in K_signals for sig in selected_signals)
+    if need_alert:
+        alertmsg = f"{data['Datetime'].iloc[-1]} {ticker}: 出现信号=> {K_signals}"
+        send_telegram_alert(alertmsg)  # Telegram推送
+        # sendemailalert(...)  # 可保留原有email推送
+
+# 其余原始代码不变
 # 新增：K线形态阈值调整（动态阈值优化）
 BODY_RATIO_THRESHOLD = st.number_input("K線實體占比閾值 (大陽/大陰線)", min_value=0.1, max_value=0.9, value=0.6, step=0.05)
 SHADOW_RATIO_THRESHOLD = st.number_input("K線影線長度閾值 (錘子/射擊線)", min_value=0.1, max_value=3.0, value=2.0, step=0.1)
