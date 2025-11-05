@@ -87,12 +87,7 @@ def calculate_signal_success_rate(data):
         "📉 衰竭跳空(下)", "📉 連續向下賣出", "📉 SMA50下降趨勢", "📉 SMA50_200下降趨勢", 
         "📉 新卖出信号", "📉 RSI-MACD Overbought Crossover", "📉 EMA-SMA Downtrend Sell", 
         "📉 Volume-MACD Sell", "📉 EMA10_30賣出", "📉 EMA10_30_40強烈賣出", "📉 看跌吞沒", 
-        "📉 上吊線", "📉 黃昏之星","📈 Low>High", "📈 MACD買入", "📈 EMA買入", "📈 價格趨勢買入", "📈 價格趨勢買入(量)", 
-        "📈 價格趨勢買入(量%)", "📈 普通跳空(上)", "📈 突破跳空(上)", "📈 持續跳空(上)", 
-        "📈 衰竭跳空(上)", "📈 連續向上買入", "📈 SMA50上升趨勢", "📈 SMA50_200上升趨勢", 
-        "📈 新买入信号", "📈 RSI-MACD Oversold Crossover", "📈 EMA-SMA Uptrend Buy", 
-        "📈 Volume-MACD Buy", "📈 EMA10_30買入", "📈 EMA10_30_40強烈買入", "📈 看漲吞沒", 
-        "📈 錘頭線", "📈 早晨之星","✅ 量價","🔄 新转折点"
+        "📉 上吊線", "📉 黃昏之星"
     ]
     
     all_signals = set()
@@ -269,7 +264,12 @@ all_signal_types = [
         "📉 衰竭跳空(下)", "📉 連續向下賣出", "📉 SMA50下降趨勢", "📉 SMA50_200下降趨勢", 
         "📉 新卖出信号", "📉 RSI-MACD Overbought Crossover", "📉 EMA-SMA Downtrend Sell", 
         "📉 Volume-MACD Sell", "📉 EMA10_30賣出", "📉 EMA10_30_40強烈賣出", "📉 看跌吞沒", 
-        "📉 上吊線", "📉 黃昏之星"
+        "📉 上吊線", "📉 黃昏之星","📈 Low>High", "📈 MACD買入", "📈 EMA買入", "📈 價格趨勢買入", "📈 價格趨勢買入(量)", 
+        "📈 價格趨勢買入(量%)", "📈 普通跳空(上)", "📈 突破跳空(上)", "📈 持續跳空(上)", 
+        "📈 衰竭跳空(上)", "📈 連續向上買入", "📈 SMA50上升趨勢", "📈 SMA50_200上升趨勢", 
+        "📈 新买入信号", "📈 RSI-MACD Oversold Crossover", "📈 EMA-SMA Uptrend Buy", 
+        "📈 Volume-MACD Buy", "📈 EMA10_30買入", "📈 EMA10_30_40強烈買入", "📈 看漲吞沒", 
+        "📈 錘頭線", "📈 早晨之星","✅ 量價","🔄 新转折点"
     # ...其他K栏位信号. 注意不要遗漏你的所有信号
 ]
 
