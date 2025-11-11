@@ -1022,7 +1022,7 @@ while True:
                     
                         # 检查是否所有用户选中的信号都存在于K信号中
                         if all(signal in K_signals_list for signal in selected_signals):
-                            alertmsg = f"{data['Datetime'].iloc[-1]} {ticker}:{interval_options} 同时出现全部信号 => {', '.join(selected_signals)}"
+                            alertmsg = f"{data['Datetime'].iloc[-1]} {ticker}:{selected_interval} 同时出现全部信号 => {', '.join(selected_signals)}"
                             send_telegram_alert(alertmsg)
                     ##########
                 # 添加 K 线图（含 EMA）、成交量柱状图和 RSI 子图
